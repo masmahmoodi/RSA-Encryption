@@ -1,6 +1,6 @@
 #include <iostream>
-#include <climits>      
-#include <cstdlib>      
+#include <climits>
+#include <cstdlib>
 #include "RSA.h"
 
 int main() {
@@ -9,9 +9,8 @@ int main() {
 
     std::cout << "Enter a seed: ";
     std::cin >> seed;
-    srand(seed);                 
+    srand(seed);
 
-    
     p = getPrime(UCHAR_MAX, USHRT_MAX);
     q = getPrime(UCHAR_MAX, USHRT_MAX);
 
@@ -24,11 +23,6 @@ int main() {
     lambda = lcm(p - 1ULL, q - 1ULL);
     std::cout << "lambda: " << lambda << "\n";
 
-    
-    if (lambda <= 3ULL) {
-        std::cerr << "lambda too small\n";
-        return 1;
-    }
     e = getPrime(2ULL, lambda - 1ULL);
     while (lambda % e == 0ULL) {
         e = getPrime(2ULL, lambda - 1ULL);
@@ -43,10 +37,6 @@ int main() {
 
     std::cout << "Enter a positive number less than " << n << ":\n";
     std::cin >> m;
-    if (m >= n) {
-        std::cerr << "Message must be less than n.\n";
-        return 1;
-    }
 
     c = modExp(m, e, n);
     std::cout << "Cipher: " << c << "\n";
@@ -54,6 +44,26 @@ int main() {
     unsigned long long decrypted = modExp(c, d, n);
     std::cout << "Decrypted cipher: " << decrypted << "\n";
 
+    
+    //  EXTRA CREDIT 
+    
+    
+
+    std::cout << "\n--- Extra Credit: Brute-force cracking n ---\n";
+
+    unsigned long long p2, q2, lambda2, d2;
+
+    if (crackRSA(n, e, p2, q2, lambda2, d2)) {
+        std::cout << "Recovered p: " << p2 << "\n";
+        std::cout << "Recovered q: " << q2 << "\n";
+        std::cout << "Recovered lambda: " << lambda2 << "\n";
+        std::cout << "Recovered d: " << d2 << "\n";
+
+        unsigned long long cracked = modExp(c, d2, n);
+        std::cout << "Decrypted using cracked key: " << cracked << "\n";
+    } else {
+        std::cout << "Failed to crack RSA key.\n";
+    }
+
     return 0;
 }
-
